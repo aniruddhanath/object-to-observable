@@ -1,0 +1,18 @@
+{
+  "name": "object-to-observable",
+  "version": "1.0.0",
+  "description": "Converts JavaScript object into observable and provides API to manipulate the state",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "build": "babel index.js -d lib"
+  },
+  "author": "Aniruddha Nath",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.0"
+  }
+}
