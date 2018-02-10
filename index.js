@@ -1,3 +1,7 @@
+/**
+ * Sets value at given namespace path
+ * @private
+ */
 function _set_descendant_path(o, path, value) {
   if (!path) {
     return Object.keys(value).forEach((key) => o[key] = value[key]);
@@ -10,6 +14,10 @@ function _set_descendant_path(o, path, value) {
   o[keys[0]] = value;
 }
 
+/**
+ * Gets value at given namespace path
+ * @private
+ */
 function _get_descendant_path(o, path) {
   let keys = path && path.split('.');
   while (keys && keys.length) {
@@ -18,10 +26,18 @@ function _get_descendant_path(o, path) {
   return o;
 }
 
+/**
+ * Clone JS object
+ * @private
+ */
 function _clone(data) {
   return JSON.parse(JSON.stringify(data));
 }
 
+/**
+ * Checks if two objects are different
+ * @private
+ */
 function _has_diff(d1, d2) {
   // todo: optimize
   let v1 = JSON.stringify(d1),
@@ -29,6 +45,11 @@ function _has_diff(d1, d2) {
   return (v1 !== v2);
 }
 
+/**
+ * Detects match for namespace in namespaces array
+ * namespace `range.start.time` is matched on namespaces `[range]`
+ * @private
+ */
 function _detect_match(namespaces, namespace) {
   if (namespace === undefined) return true;
 
@@ -54,7 +75,15 @@ function _detect_match(namespaces, namespace) {
   return false;
 }
 
+/**
+ * Class to convert JS object to observable
+ * @class
+ */
 class State {
+  /**
+   * @constructor
+   * @param {Object} - input object
+   */
   constructor(data) {
     this._data = data;
     this._listeners = [];
@@ -65,10 +94,20 @@ class State {
     this._changed_namespaces = [];
   }
 
+  /**
+   * Initial call to create instance
+   *
+   * @param {Object} payload - input object
+   * @return {State} instance of the State Class
+   */
   static create(data) {
     return new this(data);
   }
 
+  /**
+   * Execute listener functions
+   * @private
+   */
   _notify(namespace) {
     let namespaces = _clone(this._changed_namespaces); namespaces.push(namespace);
 
@@ -85,6 +124,10 @@ class State {
     });
   }
 
+  /**
+   * Returns function to remove listeners
+   * @private
+   */
   _off(index) {
     let listeners = this._listeners;
     return function() {
@@ -94,9 +137,10 @@ class State {
 }
 
 /**
- * Attaches listener function
+ * Attaches listener function on given namespace path
  *
- * @param {string=, Function} namespace, listener function
+ * @param {string=} namespace - path on which the listener is to be attached
+ * @param {Function} listener - function that will execute upon change detected at namespace
  * @return {Function} function to remove listener
  */
 State.prototype.on = function() {
@@ -107,10 +151,10 @@ State.prototype.on = function() {
 };
 
 /**
- * Appends property
+ * Appends sub-object at given namespace path
  *
- * @param {string=, Object} namespace, payload
- * @return {void}
+ * @param {string=} namespace - path where object is to be appended
+ * @param {Object} payload - actual object to be appended
  */
 State.prototype.create = function() {
   if (this._lock) return; // don't proceed if lock is enabled
@@ -124,19 +168,20 @@ State.prototype.create = function() {
 };
 
 /**
- * Returns current state
+ * Returns current value of object in the State instance
  *
- * @return {State}
+ * @return {State} current value of object in State instance
  */
 State.prototype.getState = function () {
   return this._data;
 };
 
 /**
- * Fetches or updates value
+ * Fetches or updates value at given namespace
  *
- * @param {string, (Object|string|number|boolean)=} [namespace, value]
- * @return {*}
+ * @param {string} namespace - path where value is to be fetched or updated
+ * @param {(Object|string|number|boolean)=} value - actual value to be updated
+ * @return {Object|string|number|boolean} value at given namespace
  */
 State.prototype.prop = function () {
   let args = [...arguments],
@@ -158,9 +203,9 @@ State.prototype.prop = function () {
 };
 
 /**
- * Locks instance to avoid parallel writes
+ * Locks State instance to avoid parallel writes
  *
- * @return {State}
+ * @return {State} - State instance to enable chaning
  */
 State.prototype.lock = function () {
   this._lock = true;
@@ -169,9 +214,7 @@ State.prototype.lock = function () {
 };
 
 /**
- * Unlocks instance
- *
- * @return {void}
+ * Unlocks State instance
  */
 State.prototype.unlock = function () {
   this._lock = false;
