@@ -3,48 +3,34 @@ Converts JavaScript object into observable and provides API to manipulate the st
 
 ## Usage
 
-Import library
 ```js
+// import library
 State = require('State');
-```
 
-Initial step in converting
-```js
+// initial step in converting
 let state = new State({ name: "Nath", hobby: { instrument: 'guitar' } });
-```
 
-Get the current state
-```js
+// get the current state
 state.getState();
-```
 
-Add listener on `state` for namespace `hobby`
-```js
+// add listener on `state` for namespace `hobby`
 let unsub = state.on('hobby', (old_value, new_value) => 
   console.log(`hobby changed from ${JSON.stringify(old_value)} to ${JSON.stringify(new_value)}`)
 );
-```
 
-Append more properties
-```js
+// append more properties
 state.create('hobby.sport', 'swimming');
-```
 
-Get the hobby property using `prop`
-```js
+// get the hobby property using `prop`
 state.prop('hobby');
-```
 
-Update using lock
-```js
+// update using lock
 state
   .lock()
   .prop('name', 'John')
   .prop('profession', 'Developer')
   .unlock();
-```
 
-Remove listener
-```js
+// remove listener
 unsub();
 ```
